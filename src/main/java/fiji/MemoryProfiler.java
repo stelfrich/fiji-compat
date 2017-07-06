@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import net.imagej.patcher.LegacyInjector;
+
 import javassist.CannotCompileException;
 import javassist.ClassPool;
 import javassist.CtBehavior;
@@ -40,6 +42,10 @@ public class MemoryProfiler implements Translator {
 	public void onLoad(ClassPool pool, String classname) throws NotFoundException {
 		// do not instrument yourself
 		if (classname.equals(getClass().getName()))
+			return;
+
+		// do not instrument LegacyHooks to support IJ1 patching
+		if (classname.equals("net.imagej.patcher.LegacyHooks") || classname.equals("imagej.patcher.LegacyHooks"))
 			return;
 
 		if (only != null && !only.contains(classname))
